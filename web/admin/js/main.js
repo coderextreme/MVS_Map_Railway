@@ -5236,9 +5236,7 @@ if (publishSceneBtn && publishingModal) {
 
 function ClosePublishModal () {
     const modalElement = document.getElementById('publishingModal');
-    console.log('CP 1');
     if (!modalElement) return;
-    console.log('CP 2');
 
     // Ensure we always have an instance to close even if it wasn't cached
     const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
