@@ -166,23 +166,23 @@ function getCacheKey(sReference, scale=null, rotation=null) {
  */
 function normalizeReferencePath(sReference) {
     if (!sReference) return sReference;
-
+    
     // If it's a URL, return as-is
     if (isUrl(sReference)) {
         return sReference;
     }
-
+    
     // If it starts with /, it's already an absolute path from server root
     // This includes paths like /objects/duck.glb
     if (sReference.startsWith('/')) {
         return sReference;
     }
-
+    
     // If it starts with objects/, normalize to /objects/
     if (sReference.startsWith('objects/')) {
         return '/' + sReference;
     }
-
+    
     // Otherwise, assume it's a relative path and prepend /objects/
     // This handles cases where just the filename is provided (e.g., "duck.glb")
     return '/objects/' + sReference;
@@ -878,11 +878,11 @@ function aggregateTextureInfo(objects) {
 function updatePropertiesPanel(model) {
     // Filter out canvas root from selected objects for aggregation
     const validSelectedObjects = selectedObjects.filter(obj => obj && obj.userData?.properties && !obj.userData?.isCanvasRoot);
-
+    
     // Use aggregated data if multiple objects selected, otherwise use single model
     let totalTriangles = 0;
     let aggregatedTextureInfo = null;
-
+    
     if (validSelectedObjects.length > 1) {
         // Multiple objects selected - aggregate data
         totalTriangles = aggregateTriangleCount(validSelectedObjects);
@@ -907,7 +907,7 @@ function updatePropertiesPanel(model) {
     // Calculate texture information for #texCount
     let textureInfoText = "None";
     if (aggregatedTextureInfo && aggregatedTextureInfo.totalTextures > 0) {
-        if (aggregatedTextureInfo.maxResolution.width === aggregatedTextureInfo.minResolution.width &&
+        if (aggregatedTextureInfo.maxResolution.width === aggregatedTextureInfo.minResolution.width && 
             aggregatedTextureInfo.minResolution.width > 0) {
             // All textures same resolution
             textureInfoText = `${aggregatedTextureInfo.totalTextures} @ ${aggregatedTextureInfo.maxResolution.width}x${aggregatedTextureInfo.maxResolution.height}`;
@@ -930,13 +930,13 @@ function updatePropertiesPanel(model) {
         }
         return;
     }
-
+    
     // Show properties for single object or group
     if (!model || !model.userData?.properties) {
         propertiesPanel.textContent = "";
         return;
     }
-
+    
     const p = model.userData.properties;
     let propertiesText = `Position: (${p.pos.x.toFixed(2)}, ${p.pos.y.toFixed(2)}, ${p.pos.z.toFixed(2)})\n` + `Rotation: (${p.rot.x.toFixed(4)}, ${p.rot.y.toFixed(4)}, ${p.rot.z.toFixed(4)}, ${p.rot.w.toFixed(4)})\n` + `Scale: (${p.scl.x.toFixed(2)}, ${p.scl.y.toFixed(2)}, ${p.scl.z.toFixed(2)})\n` + `Bounds: (${p.size.x.toFixed(2)}, ${p.size.y.toFixed(2)}, ${p.size.z.toFixed(2)})`;
     propertiesPanel.textContent = propertiesText;
@@ -1326,7 +1326,7 @@ function selectObject(obj, additive=false, toggle=false) {
             return;
         }
     }
-
+    
     if (!additive && !toggle) {
         selectedObjects.forEach(o => {
             o.userData.listItem?.classList.remove("selected");
@@ -1777,7 +1777,7 @@ function createHumanGuide(heightMeters=HUMAN_HEIGHT) {
 function groupSelectedObjects() {
     if (selectedObjects.length < 2)
         return;
-
+    
     // Block grouping if there are unsaved changes
     if (!checkUnsavedChangesBeforeEdit()) {
         return;
@@ -1889,7 +1889,7 @@ function groupSelectedObjects() {
 function ungroupSelectedObject() {
     if (selectedObjects.length !== 1)
         return;
-
+    
     // Block ungrouping if there are unsaved changes
     if (!checkUnsavedChangesBeforeEdit()) {
         return;
@@ -2863,7 +2863,7 @@ function generateUniqueName(baseName) {
 function duplicateSelectedObjects() {
     if (selectedObjects.length === 0)
         return;
-
+    
     // Block duplication if there are unsaved changes
     if (!checkUnsavedChangesBeforeEdit()) {
         return;
@@ -2915,7 +2915,7 @@ function duplicateSelectedObjects() {
     if (duplicates.length > 0) {
         // Save state after duplication
         saveSceneState('duplicate', duplicates);
-
+        
         selectedObjects.forEach(obj => {
             obj.userData.listItem?.classList.remove("selected");
             setHelperVisible(obj, false);
@@ -2952,18 +2952,18 @@ function duplicateSelectedObjects() {
 function deleteObject(obj) {
     if (!obj || obj.userData?.isCanvasRoot)
         return;
-
+    
     // Block deletion if there are unsaved changes
     if (!checkUnsavedChangesBeforeEdit()) {
         return;
     }
-
+    
     // Save state before deletion
-    const objectsToDelete = obj instanceof THREE.Group ?
-        [obj, ...obj.children.filter(child => !child.userData?.isCanvasRoot)] :
+    const objectsToDelete = obj instanceof THREE.Group ? 
+        [obj, ...obj.children.filter(child => !child.userData?.isCanvasRoot)] : 
         [obj];
     saveSceneState('delete', objectsToDelete);
-
+    
     if (transform.object === obj)
         transform.detach();
 
@@ -3038,12 +3038,12 @@ function setCanvasSize() {
         }
         return;
     }
-
+    
     const newSize = parseFloat(canvasSizeInput.value) || 20;
     if (newSize === groundSize) {
         return; // No change needed
     }
-
+    
     groundSize = newSize;
     scene.remove(grid);
     grid = new THREE.GridHelper(groundSize,groundSize,0x888888,0x444444);
@@ -3110,7 +3110,7 @@ renderer.domElement.addEventListener("mousemove", e => {
     if (justFinishedTransform && !transform.dragging) {
         justFinishedTransform = false;
     }
-
+    
     const rect = renderer.domElement.getBoundingClientRect();
     const mouse = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1,-((e.clientY - rect.top) / rect.height) * 2 + 1);
     const raycaster = new THREE.Raycaster();
@@ -3156,14 +3156,14 @@ renderer.domElement.addEventListener("click", e => {
             return;
         }
     }
-
+    
     // Prevent selection changes immediately after a transform operation
     // This ensures the object being edited remains selected even if it overlaps with another object
     if (justFinishedTransform) {
         justFinishedTransform = false; // Clear the flag
         return; // Don't change selection
     }
-
+    
     const rect = renderer.domElement.getBoundingClientRect();
     const mouse = new THREE.Vector2(((e.clientX - rect.left) / rect.width) * 2 - 1,-((e.clientY - rect.top) / rect.height) * 2 + 1);
     const raycaster = new THREE.Raycaster();
@@ -3675,7 +3675,7 @@ function isCodeEditorFocused() {
 // Save complete scene state
 function saveSceneState(actionType = 'transform', affectedObjects = null) {
     if (isUndoRedoInProgress) return;
-
+    
     // Clear redo stack when new action is performed
     if (redoStack.length > 0) {
         redoStack = [];
@@ -3693,7 +3693,7 @@ function saveSceneState(actionType = 'transform', affectedObjects = null) {
     };
 
     undoStack.push(state);
-
+    
     // Limit stack size
     if (undoStack.length > MAX_UNDO_HISTORY) {
         undoStack.shift();
@@ -3714,7 +3714,7 @@ function undo() {
     if (undoStack.length === 0) return;
 
     isUndoRedoInProgress = true;
-
+    
     // Save current state to redo stack
     const currentState = {
         type: 'undo',
@@ -3725,7 +3725,7 @@ function undo() {
 
     // Get the last undo state
     const stateToRestore = undoStack.pop();
-
+    
     // Restore scene from JSON (skip state save to avoid infinite loop)
     parseJSONAndUpdateScene(stateToRestore.sceneJSON, true).then(() => {
         isUndoRedoInProgress = false;
@@ -3749,7 +3749,7 @@ function redo() {
     if (redoStack.length === 0) return;
 
     isUndoRedoInProgress = true;
-
+    
     // Save current state to undo stack
     const currentState = {
         type: 'redo',
@@ -3760,7 +3760,7 @@ function redo() {
 
     // Get the last redo state
     const stateToRestore = redoStack.pop();
-
+    
     // Restore scene from JSON (skip state save to avoid infinite loop)
     parseJSONAndUpdateScene(stateToRestore.sceneJSON, true).then(() => {
         isUndoRedoInProgress = false;
@@ -3786,7 +3786,7 @@ function updateUndoRedoButtons() {
         btnUndo.classList.toggle('opacity-50', !canUndo);
         btnUndo.style.cursor = canUndo ? 'pointer' : 'not-allowed';
     }
-
+    
     if (btnRedo) {
         let canRedo = false;
         if (isCodeEditorFocused()) {
@@ -3804,7 +3804,7 @@ function updateUndoRedoButtons() {
 // Legacy saveState function for backward compatibility (now saves full scene)
 function saveState() {
     if (isUndoRedoInProgress) return;
-
+    
     const affectedObjects = selectedObject ? [selectedObject] : selectedObjects.length > 0 ? selectedObjects : null;
     saveSceneState('transform', affectedObjects);
 }
@@ -4311,12 +4311,12 @@ function discardCodeEditorChanges() {
     if (!jsonEditor || !originalJSON) {
         return;
     }
-
+    
     isProgrammaticUpdate = true;
     setJSONEditorText(originalJSON);
     hasUnsavedChanges = false;
     applyChanges.style.display = 'none';
-
+    
     // Use setTimeout to ensure the json-change event has been processed
     setTimeout( () => {
         isProgrammaticUpdate = false;
@@ -4477,7 +4477,7 @@ async function parseJSONAndUpdateScene(jsonText, skipStateSave = false) {
         // Update JSON editor to reflect any changes (including canvas size changes)
         // This will also update originalJSON and hide the apply button
         updateJSONEditor();
-
+        
         // Save state after applying changes from code editor (unless it's from undo/redo)
         if (!skipStateSave && !isUndoRedoInProgress) {
             saveSceneState('code-edit', null);
@@ -5158,23 +5158,23 @@ if (jsonEditor) {
         // State is saved in parseJSONAndUpdateScene
     }
     );
-
+    
     // Wire up modal's "Apply Changes" button
     const applyChangesFromModal = document.getElementById('applyChangesFromModal');
     if (applyChangesFromModal) {
         applyChangesFromModal.addEventListener('click', async () => {
             const modalElement = document.getElementById('unsavedChangesModal');
             const modal = bootstrap.Modal.getInstance(modalElement);
-
+            
             // Disable button during processing
             applyChangesFromModal.disabled = true;
             applyChangesFromModal.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Applying...';
-
+            
             try {
                 // Apply changes
                 await parseJSONAndUpdateScene(getJSONEditorText());
                 // State is saved in parseJSONAndUpdateScene
-
+                
                 // Close modal after successful apply
                 if (modal) {
                     modal.hide();
@@ -5189,17 +5189,17 @@ if (jsonEditor) {
             }
         });
     }
-
+    
     // Wire up modal's "Discard Changes" button
     const discardChangesFromModal = document.getElementById('discardChangesFromModal');
     if (discardChangesFromModal) {
         discardChangesFromModal.addEventListener('click', () => {
             const modalElement = document.getElementById('unsavedChangesModal');
             const modal = bootstrap.Modal.getInstance(modalElement);
-
+            
             // Discard changes
             discardCodeEditorChanges();
-
+            
             // Close modal after discarding
             if (modal) {
                 modal.hide();
@@ -5220,27 +5220,24 @@ updateTransformButtonStates();
 // ===== Publish Scene Modal =====
 const publishSceneBtn = document.getElementById('publishScene');
 const publishingModal = document.getElementById('publishingModal');
+var g_pModal;
 
 if (publishSceneBtn && publishingModal) {
     publishSceneBtn.addEventListener('click', () => {
         // Show the publishing modal
-        const modal = new bootstrap.Modal (publishingModal, {
+        g_pModal = new bootstrap.Modal (publishingModal, {
             backdrop: 'static',
             keyboard: false
         });
-        modal.show ();
+        g_pModal.show ();
 
         g_pMap.onPublish ();
     });
 }
 
 function ClosePublishModal () {
-    const modalElement = document.getElementById('publishingModal');
-    if (!modalElement) return;
-
-    // Ensure we always have an instance to close even if it wasn't cached
-    const modalInstance = bootstrap.Modal.getOrCreateInstance(modalElement);
-    modalInstance.hide();
+    g_pModal.hide ();
+    console.log ('Publish Modal Closed!');
 }
 
 // Update button states periodically to handle code editor focus changes
@@ -5276,30 +5273,30 @@ async function getObjectFiles() {
         // Construct URL relative to current page location to handle both http and file protocols
         // If running through server, use absolute path; otherwise construct from current location
         let jsonUrl = '/objects/objects.json';
-
+        
         // If we're on file:// protocol, we can't fetch - return empty and show error
         if (window.location.protocol === 'file:') {
             console.error('Cannot load objects.json: Page must be served through HTTP server, not file:// protocol');
             console.error('Please access the page through the web server (e.g., http://localhost:PORT)');
             return [];
         }
-
+        
         // Construct full URL if needed (for relative paths)
         if (!jsonUrl.startsWith('http')) {
             jsonUrl = new URL(jsonUrl, window.location.origin).href;
         }
-
+        
         console.log('Fetching objects.json from:', jsonUrl);
         const response = await fetch(jsonUrl);
         console.log('Fetch status:', response.status, response.statusText);
-
+        
         if (!response.ok) {
             console.error('Failed to fetch objects.json:', response.status, response.statusText);
             const text = await response.text();
             console.error('Response body:', text);
             return [];
         }
-
+        
         const text = await response.text();
         console.log('Raw response text:', text);
         let data;
@@ -5310,13 +5307,13 @@ async function getObjectFiles() {
             console.error('Failed to parse JSON:', parseError, 'Text was:', text);
             return [];
         }
-
+        
         // Support both array format and object with array property
         const objectList = Array.isArray(data) ? data : (data.objects || data.files || []);
         console.log('Extracted object list:', objectList);
-
+        
         if (Array.isArray(objectList) && objectList.length > 0) {
-            const filtered = objectList.filter(file =>
+            const filtered = objectList.filter(file => 
                 typeof file === 'string' && (file.endsWith('.glb') || file.endsWith('.gltf'))
             );
             console.log('Filtered object files:', filtered);
@@ -5330,7 +5327,7 @@ async function getObjectFiles() {
             console.error('CORS error detected. Make sure you are accessing the page through the web server, not via file:// protocol');
         }
     }
-
+    
     // Return empty array if JSON file not found or invalid
     return [];
 }
@@ -5339,15 +5336,15 @@ async function getObjectFiles() {
 function createObjectPreview(objectPath, container) {
     const width = 100;
     const height = 100;
-
+    
     // Create a small scene for preview
     const previewScene = new THREE.Scene();
     previewScene.background = new THREE.Color(0x2a2a2a);
-
+    
     const previewCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
     previewCamera.position.set(2, 2, 2);
     previewCamera.lookAt(0, 0, 0);
-
+    
     const previewRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     previewRenderer.setSize(width, height);
     previewRenderer.setPixelRatio(window.devicePixelRatio);
@@ -5356,32 +5353,32 @@ function createObjectPreview(objectPath, container) {
     canvas.style.height = '100%';
     canvas.style.display = 'block';
     container.appendChild(canvas);
-
+    
     // Add lights
     previewScene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 1.2));
     const dirLight = new THREE.DirectionalLight(0xffffff, 1);
     dirLight.position.set(5, 10, 7);
     previewScene.add(dirLight);
-
+    
     // Load the model
     loader.load(objectPath, (gltf) => {
         const model = gltf.scene;
-
+        
         // Calculate bounding box and center the model
         const box = new THREE.Box3().setFromObject(model);
         const center = box.getCenter(new THREE.Vector3());
         const size = box.getSize(new THREE.Vector3());
-
+        
         // Center the model
         model.position.sub(center);
-
+        
         // Scale to fit in preview (max dimension should be ~1.5)
         const maxDim = Math.max(size.x, size.y, size.z);
         const scale = 1.5 / maxDim;
         model.scale.multiplyScalar(scale);
-
+        
         previewScene.add(model);
-
+        
         // Animate rotation
         let angle = 0;
         function animate() {
@@ -5395,14 +5392,14 @@ function createObjectPreview(objectPath, container) {
             requestAnimationFrame(animate);
         }
         animate();
-
+        
         // Store renderer for cleanup
         objectLibraryCache.set(objectPath, { renderer: previewRenderer, scene: previewScene, camera: previewCamera });
     }, undefined, (error) => {
         console.error(`Failed to load preview for ${objectPath}:`, error);
         container.innerHTML = '<div class="text-center text-muted p-3"><i class="fa-solid fa-triangle-exclamation"></i><br>Failed to load</div>';
     });
-
+    
     return previewRenderer;
 }
 
@@ -5410,44 +5407,44 @@ function createObjectPreview(objectPath, container) {
 function createObjectLibraryItem(objectPath) {
     const col = document.createElement('div');
     col.className = 'col-4 col-md-2 col-xxl-1';
-
+    
     const card = document.createElement('div');
     card.className = 'card bg-dark bg-opacity-50 border-secondary h-100 user-select-none';
     card.style.cursor = 'pointer';
     card.style.transition = 'transform 0.2s, box-shadow 0.2s';
-
+    
     card.addEventListener('mouseenter', () => {
         card.style.transform = 'translateY(-5px)';
         card.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
     });
-
+    
     card.addEventListener('mouseleave', () => {
         card.style.transform = '';
         card.style.boxShadow = '';
     });
-
+    
     // Preview container
     const previewContainer = document.createElement('div');
     previewContainer.className = 'card-img-top bg-dark';
     previewContainer.style.height = '100px';
     previewContainer.style.overflow = 'hidden';
     previewContainer.style.position = 'relative';
-
+    
     // Object name
     const objectName = objectPath.replace(/^.*[\\\/]/, '').replace(/\.[^/.]+$/, '');
     const cardBody = document.createElement('div');
     cardBody.className = 'card-body p-2';
-
+    
     const cardTitle = document.createElement('h6');
     cardTitle.className = 'card-title mb-0 text-center small text-truncate';
     cardTitle.textContent = objectName;
     cardTitle.title = objectName;
-
+    
     cardBody.appendChild(cardTitle);
-
+    
     card.appendChild(previewContainer);
     card.appendChild(cardBody);
-
+    
     // Click handler to add object to scene
     card.addEventListener('click', async () => {
         try {
@@ -5455,11 +5452,11 @@ function createObjectLibraryItem(objectPath) {
             const gltf = await new Promise((resolve, reject) => {
                 loader.load(fullPath, resolve, undefined, reject);
             });
-
+            
             const model = gltf.scene;
             model.userData.isSelectable = true;
             model.name = objectName;
-
+            
             // Track original source - use full path format /objects/filename.glb for sReference
             const referencePath = `/objects/${objectPath}`;
             model.userData.sourceRef = {
@@ -5467,13 +5464,13 @@ function createObjectLibraryItem(objectPath) {
                 baseName: objectName,
                 reference: referencePath
             };
-
+            
             // Cache the model using the normalized reference path for consistency with loadModelFromReference
             modelCache.set(referencePath, model);
-
+            
             // Position at origin or camera focus point
             model.position.set(0, 0, 0);
-
+            
             createBoxHelperFor(model);
             canvasRoot.add(model);
             addModelToList(model, model.name);
@@ -5483,7 +5480,7 @@ function createObjectLibraryItem(objectPath) {
             frameCameraOn(model);
             saveSceneState('create', [model]);
             updateJSONEditorFromScene();
-
+            
             // Close the offcanvas
             const bsOffcanvas = bootstrap.Offcanvas.getInstance(objLibPanel);
             if (bsOffcanvas) {
@@ -5494,14 +5491,14 @@ function createObjectLibraryItem(objectPath) {
             alert(`Failed to load object: ${objectName}`);
         }
     });
-
+    
     col.appendChild(card);
-
+    
     // Create preview after adding to DOM
     setTimeout(() => {
         createObjectPreview(`/objects/${objectPath}`, previewContainer);
     }, 100);
-
+    
     return col;
 }
 
@@ -5511,14 +5508,14 @@ async function loadObjectLibrary() {
         console.error('objLibGrid element not found');
         return;
     }
-
+    
     objLibGrid.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="fa-solid fa-spinner fa-spin fa-2x mb-3"></i><p class="mb-0">Loading objects...</p></div>';
-
+    
     try {
         console.log('Loading object library...');
         const objectFiles = await getObjectFiles();
         console.log('Received object files:', objectFiles);
-
+        
         if (objectFiles.length === 0) {
             console.warn('No object files found');
             // Check if we're on file:// protocol and show appropriate message
@@ -5529,7 +5526,7 @@ async function loadObjectLibrary() {
             }
             return;
         }
-
+        
         console.log(`Creating ${objectFiles.length} object library items`);
         objLibGrid.innerHTML = '';
         objectFiles.forEach(objectPath => {
@@ -5553,7 +5550,7 @@ if (objLibPanel) {
             libraryLoaded = true;
         }
     });
-
+    
     // Cleanup previews when panel is hidden
     objLibPanel.addEventListener('hidden.bs.offcanvas', function () {
         // Cleanup preview renderers to free memory
