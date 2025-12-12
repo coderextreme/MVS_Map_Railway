@@ -367,7 +367,6 @@ async #ApplyDatabaseUpdates (pConnection, sDatabaseName)
    console.log (`Database updates complete.`);
 }
 
-
    async onSQLReady (pMVSQL, err)
    {
       if (pMVSQL)
@@ -377,7 +376,7 @@ async #ApplyDatabaseUpdates (pConnection, sDatabaseName)
             // Initialize database if it doesn't exist
             await this.InitializeDatabase (pMVSQL);
 
-            this.ReadFromEnv (Settings.MVSF, [ "nPort" ]);
+            this.ReadFromEnv (Settings.MVSF, [ "nPort", "key" ]);
 
             this.#pServer = new MVSF (Settings.MVSF, require ('./handler.json'), __dirname, new AuthSimple (), 'application/json');
             this.#pServer.LoadHtmlSite (__dirname, [ './web/admin', './web/public']);
